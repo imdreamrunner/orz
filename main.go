@@ -111,8 +111,11 @@ func GetIdeas() []map[string]interface{} {
         if err != nil {
             log.Fatal(err)
         }
-        log.Println("Original content: " + content)
+        name = sanitize.Accents(name)
+        email = sanitize.Accents(email)
+        link = sanitize.Accents(link)
         content = sanitize.Accents(content)
+        log.Println("Original content: " + content)
         html := string(blackfriday.MarkdownCommon([]byte(content)))
         log.Println("Converted: " + html)
         ideas = append(ideas, map[string]interface{}{
