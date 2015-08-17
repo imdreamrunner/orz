@@ -171,4 +171,4 @@ crashlytics-build.properties
 _static
 _libraries
 *.db
-./orz
+orz

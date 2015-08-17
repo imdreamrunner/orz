@@ -8,6 +8,7 @@ import (
     "github.com/go-martini/martini"
     "github.com/martini-contrib/render"
     "github.com/russross/blackfriday"
+    "github.com/kennygrant/sanitize"
     _ "github.com/mattn/go-sqlite3"
 )
 
@@ -67,15 +68,15 @@ func PostIdeaHandler(req *http.Request, render render.Render, log *log.Logger) {
     log.Println("Link: " + link)
     log.Println("Content: " + content)
     if len(name) == 0 {
-        render.JSON(200, map[string]interface{}{"error": 1, "message": "Empty name."})
+        render.JSON(400, map[string]interface{}{"error": 1, "message": "Empty name."})
         return
     }
     if len(email) == 0 {
-        render.JSON(200, map[string]interface{}{"error": 2, "message": "Empty email."})
+        render.JSON(400, map[string]interface{}{"error": 2, "message": "Empty email."})
         return
     }
     if len(content) == 0 {
-        render.JSON(200, map[string]interface{}{"error": 2, "message": "Empty content."})
+        render.JSON(400, map[string]interface{}{"error": 3, "message": "Empty content."})
         return
     }
     AddIdea(name, email, link, content)
@@ -111,6 +112,7 @@ func GetIdeas() []map[string]interface{} {
             log.Fatal(err)
         }
         log.Println("Original content: " + content)
+        content = sanitize.Accents(content)
         html := string(blackfriday.MarkdownCommon([]byte(content)))
         log.Println("Converted: " + html)
         ideas = append(ideas, map[string]interface{}{
